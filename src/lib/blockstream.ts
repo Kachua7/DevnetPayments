@@ -1,7 +1,8 @@
+import * as btc from '@scure/btc-signer';
 import type { UTXO } from '../types';
 
-const BLOCKSTREAM_TESTNET_API = 'https://blockstream.info/testnet/api';
-const REQUEST_TIMEOUT_MS = 8_000;
+export const BLOCKSTREAM_TESTNET_API = 'https://blockstream.info/testnet/api';
+export const REQUEST_TIMEOUT_MS = 8_000;
 
 export interface AddressStats {
   funded_txo_sum: number;
@@ -14,10 +15,22 @@ export interface AddressBalance {
   unconfirmedSats: number;
 }
 
-function assertTestnetSegwitAddress(address: string): void {
-  // This app currently derives native SegWit testnet P2WPKH addresses (tb1q...).
-  if (typeof address !== 'string' || !/^tb1q[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}$/i.test(address)) {
-    throw new Error('Invalid Bitcoin testnet SegWit address');
+export function assertTestnetSegwitAddress(address: string): void {
+  if (typeof address !== 'string' || address.trim().length === 0) {
+    throw new Error('Invalid Bitcoin testnet address: empty or non-string');
+  }
+  const clean = address.trim();
+  if (!/^tb1q[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}$/i.test(clean)) {
+    throw new Error('Invalid Bitcoin testnet SegWit address format');
+  }
+  try {
+    const decoded = btc.Address(btc.TEST_NETWORK).decode(clean);
+    if (decoded.type !== 'wpkh') {
+      throw new Error(`Unsupported SegWit address type: ${decoded.type}`);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Invalid address checksum';
+    throw new Error(`Invalid Bitcoin testnet SegWit address: ${message}`);
   }
 }
 

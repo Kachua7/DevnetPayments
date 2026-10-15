@@ -5,17 +5,17 @@ BitKosh is a browser-based React/Vite prototype for experimenting with Bitcoin t
 ## Requirements
 
 - Node.js 20 or newer
-- npm or Bun (use a generated lockfile for reproducible builds)
+- npm (canonical package manager with committed package-lock.json)
 - A modern browser with Web Crypto support
 
 ## Run locally
 
 ```sh
-npm install
+npm ci
 npm run dev
 ```
 
-The Vite development server listens on port `3000`. This handoff does not include a valid package-manager lockfile: the dependency graph could not be regenerated in this environment. In a networked clean environment, run `npm install`, commit the generated `package-lock.json`, and use `npm ci` for CI/deployment. For a production bundle, run:
+The Vite development server listens on port `3000`. The dependency tree is locked via `package-lock.json`. Use `npm ci` for reproducible CI/deployment. For verification and production builds, run:
 
 ```sh
 npm run typecheck

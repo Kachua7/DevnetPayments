@@ -39,6 +39,7 @@ import {
   BTC_INR_RATE,
   shortAddress,
 } from '../../lib/constants';
+import { PortfolioGrowthChart } from '../invest/PortfolioGrowthChart';
 
 interface InvestTabProps {
   sips: SipPlan[];
@@ -163,6 +164,15 @@ export const InvestTab: React.FC<InvestTabProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Historical Growth Line Chart via Recharts */}
+        <PortfolioGrowthChart
+          executions={safeExecutions}
+          sips={safeSips}
+          totalInvestedInr={totalSipInvestedInr}
+          currentValueInr={currentSipValueInr}
+          totalAccumulatedSats={totalSipAccumulatedSats}
+        />
 
         {/* Top Buttons */}
         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-zinc-900">

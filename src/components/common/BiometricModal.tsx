@@ -57,45 +57,22 @@ export const BiometricModal: React.FC<BiometricModalProps> = ({
     }
   }, [isOpen, initialMode]);
 
-  const startScan = (authMode: BiometricAuthMode = mode) => {
+  const startScan = (_authMode: BiometricAuthMode = mode) => {
     setStatus('scanning');
-    setProgress(0);
+    setProgress(40);
     setErrorMessage('');
     playBiometricSound('scan');
     triggerHaptic('light');
 
-    if (authMode === 'faceid') {
-      // Simulate FaceID scanner cadence (800ms scan -> success)
-      let currentProgress = 0;
-      const interval = setInterval(() => {
-        currentProgress += 20;
-        setProgress(Math.min(currentProgress, 100));
-        if (currentProgress >= 100) {
-          clearInterval(interval);
-          handleSuccess();
-        }
-      }, 140);
-    } else {
-      // Fingerprint mode: requires a tap or auto-starts
-      let currentProgress = 0;
-      const interval = setInterval(() => {
-        currentProgress += 25;
-        setProgress(Math.min(currentProgress, 100));
-        if (currentProgress >= 100) {
-          clearInterval(interval);
-          handleSuccess();
-        }
-      }, 160);
-    }
-  };
-
-  const handleSuccess = () => {
-    setStatus('success');
-    playBiometricSound('success');
-    triggerHaptic('success');
+    // Biometric hardware sensors (WebAuthn / Secure Enclave) are not connected.
+    // Never simulate successful biometric authentication; fail closed and require PIN.
     setTimeout(() => {
-      onSuccess();
-    }, 650);
+      setStatus('failed');
+      setProgress(0);
+      playBiometricSound('fail');
+      triggerHaptic('warning');
+      setErrorMessage('Hardware biometric sensor (WebAuthn) is not connected. Authenticate with your 6-digit PIN.');
+    }, 450);
   };
 
   const handleFailSimulation = () => {

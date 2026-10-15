@@ -413,3 +413,21 @@ export function clearAllStorage(): void {
   sessionStorage.removeItem(STORAGE_KEYS.SESSION_PIN);
   sessionStorage.removeItem(STORAGE_KEYS.SESSION_WORDS);
 }
+
+export {
+  STORAGE_KEYS,
+  migrateLegacyDemoData,
+  isPlainRecord,
+  isUserProfile,
+  isUTXO,
+  isWalletState,
+  isTransaction,
+  isInheritancePlan,
+  isSipPlan,
+  isGroupMember,
+  isGroupInvestmentPool,
+  isInvestmentExecution,
+  isVaultMember,
+  isVaultProposal,
+  isVault,
+};

@@ -14,6 +14,9 @@ export default defineConfig(() => ({
     },
   },
   server: {
+    host: '0.0.0.0',
+    port: 3000,
+    allowedHosts: true as const,
     // Set DISABLE_HMR=true only for environments where file watching is unstable.
     hmr: process.env.DISABLE_HMR !== 'true',
     watch: process.env.DISABLE_HMR === 'true' ? null : {},

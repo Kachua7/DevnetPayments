@@ -103,6 +103,17 @@ export function isTestnetAddressForPublicKey(address: string, publicKeyHex: stri
   }
 }
 
+/** Validates that an address is a valid Bitcoin testnet address with a mathematically correct Bech32 checksum. */
+export function validateTestnetAddress(address: string): boolean {
+  if (typeof address !== 'string' || address.trim().length === 0) return false;
+  try {
+    const decoded = btc.Address(btc.TEST_NETWORK).decode(address.trim());
+    return decoded !== undefined && decoded !== null;
+  } catch {
+    return false;
+  }
+}
+
 export async function deriveP2WSHAddress(
   threshold: number,
   totalSigners: number,

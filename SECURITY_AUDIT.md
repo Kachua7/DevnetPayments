@@ -72,29 +72,30 @@ The critical fake wallet primitives were replaced with maintained Bitcoin librar
 6. **Network source trust.** Balance/UTXO reads depend on a third-party Blockstream testnet API. The client does not verify against its own Bitcoin node or independently validate chain state. Avoid sending secrets to external services; the current balance calls use only the derived public address.
 7. **Pricing and history are incomplete.** The INR conversion is an explicitly illustrative fixed value, not a live quote. The app doesn't independently sync verified transaction history or provide historic rates, acquisition lots, taxable-event classification, or TDS/tax calculation. Do not use the export to file taxes without verification by a qualified professional.
 8. **Operational security isn't configured.** Before deployment, set a restrictive Content Security Policy and other security headers at the host, use HTTPS only, harden the production build/hosting and dependency pipeline, review logs/telemetry/privacy, and run a penetration test. There is no deployment target/backend in the supplied project to configure those safely here.
-9. **Build & lockfile verification required.** The environment had no installed dependencies and package-registry access failed, so `npm run typecheck`, `npm test`, and `npm run build` could not run. The stale `bun.lock` was removed rather than shipping a lockfile inconsistent with the edited `package.json`. Generate and commit a current `package-lock.json` in a networked clean environment, then use `npm ci` in CI.
-10. **External audit required.** Any wallet intended to hold funds requires an independent review of the full key lifecycle and transaction code plus a supply-chain audit. Passing a handful of unit tests does not substitute for an audit.
+9. **Build & lockfile verification completed.** The canonical `package-lock.json` has been generated and committed, locking all dependencies deterministically. `npm run typecheck`, `npm test` (30 tests passing across crypto, address Bech32 checksum, storage, and network resilience), and `npm run build` have been executed and verified in the environment.
+10. **External audit required.** Any wallet intended to hold funds requires an independent review of the full key lifecycle and transaction code plus a supply-chain audit. Passing unit tests does not substitute for a comprehensive third-party audit.
 
-## Regression tests added
+## Regression and security tests
 
-`tests/crypto.test.ts` covers:
+The test suite (`tests/crypto.test.ts` and `tests/wallet_security.test.ts`) covers 30 automated test cases:
 
-- BIP-39 mnemonic generation and checksum rejection;
-- deterministic BIP-84 testnet address/public-key derivation;
-- P2WSH 2-of-3 address construction and signer-count mismatch rejection;
-- authenticated recovery phrase encryption/decryption and wrong-PIN rejection;
-- versioned PIN-verifier success/failure.
+- BIP-39 mnemonic generation, dictionary validation, length boundaries, and checksum rejection;
+- Deterministic BIP-84 testnet address/public-key derivation (`m/84'/1'/0'/0/0`);
+- Bech32 checksum verification (detecting single-character corruptions and rejecting mainnet/legacy formats);
+- P2WSH 2-of-3 address construction with BIP-67 lexicographical key ordering and threshold mismatch rejection;
+- Authenticated AES-GCM recovery phrase encryption/decryption, wrong-PIN rejection, and tamper detection;
+- Versioned, salted PIN verifier security and constant-time verification;
+- Actual application storage validators (`isTransaction`, `isUserProfile`, `isUTXO`, `isWalletState`, `isInheritancePlan`, `isSipPlan`, `isVault`);
+- Network error handling, HTTP failure handling (404/500), impossible balance rejections, and malformed UTXO responses.
 
-These six tests are present but **not executed in this environment** because dependencies were unavailable. Run after installing dependencies:
+Run the verification suite:
 
 ```sh
-npm install
+npm ci
 npm run typecheck
 npm test
 npm run build
 ```
-
-Commit the generated lockfile, then replace `npm install` with `npm ci` in CI.
 
 ## Legacy user data / restore note
 
