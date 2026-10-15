@@ -1,0 +1,6 @@
+{
+  "name": "BitKosh - Bitcoin Testnet Wallet Prototype",
+  "description": "Browser-based Bitcoin testnet wallet prototype with BIP-39 recovery phrases and read-only testnet balance sync. Sending, UPI, multisig coordination, biometrics, and inheritance services are not implemented.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
